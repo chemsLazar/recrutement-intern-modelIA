@@ -1,0 +1,58 @@
+[
+  {
+    "titre_de_poste": "Développeur Python",
+    "description": "Développement d'applications backend.",
+    "localisation": "Casablanca",
+    "departement": "IT",
+    "competences_requises": ["Python", "Django", "API REST"]
+  },
+  {
+    "titre_de_poste": "Chef de Projet IT",
+    "description": "Gestion de projets informatiques.",
+    "localisation": "Rabat",
+    "departement": "IT",
+    "competences_requises": ["Gestion de projet", "Scrum", "Communication"]
+  },
+  {
+    "titre_de_poste": "Analyste Financier",
+    "description": "Analyse et reporting financier.",
+    "localisation": "Casablanca",
+    "departement": "Finance",
+    "competences_requises": ["Excel", "Audit", "Comptabilité"]
+  },
+  {
+    "titre_de_poste": "Responsable RH",
+    "description": "Gestion des ressources humaines.",
+    "localisation": "Marrakech",
+    "departement": "Ressources Humaines",
+    "competences_requises": ["Gestion RH", "Communication", "Recrutement"]
+  },
+  {
+    "titre_de_poste": "Technicien Maintenance",
+    "description": "Maintenance des équipements industriels.",
+    "localisation": "Tanger",
+    "departement": "Maintenance",
+    "competences_requises": ["Électricité", "Sécurité", "Réparation"]
+  },
+  {
+    "titre_de_poste": "Développeur Frontend",
+    "description": "Développement d'interfaces utilisateur.",
+    "localisation": "Agadir",
+    "departement": "IT",
+    "competences_requises": ["React", "JavaScript", "CSS"]
+  },
+  {
+    "titre_de_poste": "Formateur RH",
+    "description": "Formation et développement RH.",
+    "localisation": "Fès",
+    "departement": "Ressources Humaines",
+    "competences_requises": ["Formation", "Gestion RH", "Communication"]
+  },
+  {
+    "titre_de_poste": "Contrôleur de Gestion",
+    "description": "Contrôle et suivi budgétaire.",
+    "localisation": "Rabat",
+    "departement": "Finance",
+    "competences_requises": ["Comptabilité", "Excel", "Audit"]
+  }
+] 
