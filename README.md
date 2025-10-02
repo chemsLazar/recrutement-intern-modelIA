@@ -81,7 +81,8 @@ AI_Recommendation/
   - **Direct Matching:** Exact skill matches for precise compatibility
   - **TF-IDF Vectorization:** Traditional text similarity using cosine similarity
   - **Pre-trained ML Model:** Advanced semantic understanding using sentence transformers
-  - **Weighted Combination:** Intelligent fusion of all three methods for optimal accuracy
+  - **LightGBM Learned Scoring (optionnel):** combine automatiquement tous les signaux lorsque vous fournissez un modèle entraîné.
+  - **Weighted Combination:** Fallback heuristique lorsque le modèle LightGBM n'est pas disponible
 
 - **Pre-trained Model:**
   - Uses `all-MiniLM-L6-v2` for multilingual semantic understanding
@@ -98,4 +99,11 @@ AI_Recommendation/
 
 ---
 
-**This structure keeps your project clean, modular, and easy to maintain or extend!** 
+**This structure keeps your project clean, modular, and easy to maintain or extend!**
+
+## Utiliser LightGBM pour la mise en production
+
+1. **Former un modèle** : collectez des exemples annotés (match réussi ou non) et extrayez pour chacun les caractéristiques disponibles dans `app/recommender.py` (scores direct/TF‑IDF/transformer, tailles de listes, etc.). Entraînez un modèle LightGBM et exportez-le au format texte (`model.save_model('lightgbm_matcher.txt')`).
+2. **Déposer le modèle** : placez le fichier généré dans `models/lightgbm_matcher.txt` (ou indiquez un autre chemin via la variable d'environnement `LIGHTGBM_MODEL_PATH`).
+3. **Installer la dépendance** : `pip install -r requirements.txt` installe désormais LightGBM.
+4. **Exécuter vos scripts** : au démarrage, le moteur charge le modèle LightGBM s'il est présent et remplace la combinaison pondérée par la prédiction apprise. En l'absence de modèle, le système utilise automatiquement le mode heuristique historique.

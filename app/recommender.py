@@ -1,9 +1,11 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import re
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import numpy as np
 import warnings
+import os
+from pathlib import Path
 warnings.filterwarnings('ignore')
 
 # Try to load pre-trained model (optional)
@@ -17,6 +19,80 @@ except Exception as e:
     print(f"⚠️ Could not load pre-trained model: {e}")
     print("🔄 Using enhanced TF-IDF mode instead")
     ML_MODEL = None
+
+# Try to load LightGBM model for learned scoring (optional)
+LIGHTGBM_MODEL = None
+LIGHTGBM_MODEL_PATH = Path(os.getenv("LIGHTGBM_MODEL_PATH", "models/lightgbm_matcher.txt"))
+
+
+def load_lightgbm_model() -> Optional["lgb.Booster"]:
+    """Attempt to load the LightGBM model from disk."""
+    global LIGHTGBM_MODEL
+    try:
+        import lightgbm as lgb
+    except ImportError as exc:
+        print(f"⚠️ LightGBM is not installed ({exc}). Rule-based scoring will be used.")
+        return None
+
+    if not LIGHTGBM_MODEL_PATH.exists():
+        print(f"ℹ️ No LightGBM model found at {LIGHTGBM_MODEL_PATH}. Using heuristic scoring.")
+        return None
+
+    try:
+        LIGHTGBM_MODEL = lgb.Booster(model_file=str(LIGHTGBM_MODEL_PATH))
+        print(f"✅ LightGBM model loaded from {LIGHTGBM_MODEL_PATH}")
+    except Exception as exc:
+        print(f"⚠️ Could not load LightGBM model ({exc}). Falling back to heuristic scoring.")
+        LIGHTGBM_MODEL = None
+
+    return LIGHTGBM_MODEL
+
+
+load_lightgbm_model()
+
+
+def build_feature_vector(
+    user_competencies: List[str],
+    job_competencies: List[str],
+    direct_percentage: float,
+    tfidf_score: float,
+    pretrained_score: float,
+    direct_matches: float,
+) -> np.ndarray:
+    """Create a feature vector consumed by the LightGBM model."""
+
+    user_count = len(user_competencies)
+    job_count = len(job_competencies)
+
+    return np.array(
+        [
+            direct_percentage,
+            tfidf_score,
+            pretrained_score,
+            direct_matches,
+            user_count,
+            job_count,
+            abs(user_count - job_count),
+        ],
+        dtype=float,
+    )
+
+
+def predict_with_lightgbm(feature_vector: np.ndarray) -> Optional[float]:
+    """Run the LightGBM model if available and return a score on 0-100."""
+
+    if LIGHTGBM_MODEL is None:
+        return None
+
+    try:
+        prediction = LIGHTGBM_MODEL.predict(feature_vector.reshape(1, -1))[0]
+        # Most recommender models are trained either for ranking (0-1) or regression (0-100)
+        if prediction <= 1:
+            return max(0.0, min(float(prediction) * 100.0, 100.0))
+        return max(0.0, min(float(prediction), 100.0))
+    except Exception as exc:
+        print(f"⚠️ LightGBM prediction failed ({exc}). Using heuristic score instead.")
+        return None
 
 # --- Helper functions for competency matching ---
 def normalize_text(text: str) -> str:
@@ -97,6 +173,20 @@ def calculate_competency_match(user_competencies: List[str], job_competencies: L
         # Calculate pre-trained ML model similarity
         pretrained_score = calculate_pretrained_similarity(user_competencies, job_competencies)
         
+        # Build feature vector for optional LightGBM model
+        feature_vector = build_feature_vector(
+            user_competencies,
+            job_competencies,
+            direct_percentage,
+            tfidf_score,
+            pretrained_score,
+            direct_matches,
+        )
+
+        lightgbm_score = predict_with_lightgbm(feature_vector)
+        if lightgbm_score is not None:
+            return lightgbm_score
+
         # HYBRID SCORING: Combine all three approaches
         if direct_matches == 0:
             # If no direct matches, rely on ML models
@@ -211,13 +301,26 @@ def calculate_user_job_score(user_profile: Dict[str, Any], job_offer: Dict[str, 
     tfidf_score = calculate_tfidf_similarity(user_competencies, job_competencies)
     pretrained_score = calculate_pretrained_similarity(user_competencies, job_competencies)
     
+    feature_vector = build_feature_vector(
+        user_competencies,
+        job_competencies,
+        direct_percentage,
+        tfidf_score,
+        pretrained_score,
+        direct_matches,
+    )
+
+    lightgbm_score = predict_with_lightgbm(feature_vector)
+
     print(f"Direct match: {direct_percentage:.1f}%")
     print(f"TF-IDF score: {tfidf_score:.1f}%")
     print(f"Pre-trained ML score: {pretrained_score:.1f}%")
-    
+    if lightgbm_score is not None:
+        print(f"LightGBM score: {lightgbm_score:.1f}%")
+
     # Calculate final hybrid score
     competency_score = calculate_competency_match(user_competencies, job_competencies)
-    
+
     print(f"🎯 FINAL HYBRID SCORE: {competency_score:.1f}%")
     print("=" * 50)
     
