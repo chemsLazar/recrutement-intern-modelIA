@@ -1,0 +1,62 @@
+[
+  {
+    "matricule": "U1001",
+    "firstName": "Ali",
+    "lastName": "Ben Salah",
+    "email": "ali.bensalah@example.com",
+    "phone": "0600000001",
+    "position": "Développeur",
+    "department": "IT",
+    "experiences": ["Développement d'applications backend", "Gestion de projet"],
+    "formations": ["Master Informatique"],
+    "competences": ["Python", "Django", "API REST", "React", "Gestion de projet", "PostgreSQl", "java", "spring boot", "Angular"]
+  },
+  {
+    "matricule": "U1002",
+    "firstName": "Fatima",
+    "lastName": "El Amrani",
+    "email": "fatima.elamrani@example.com",
+    "phone": "0600000002",
+    "position": "Analyste",
+    "department": "Finance",
+    "experiences": ["Analyse financière", "Audit"],
+    "formations": ["Master Finance"],
+    "competences": ["Excel", "Audit", "Comptabilité"]
+  },
+  {
+    "matricule": "U1003",
+    "firstName": "Youssef",
+    "lastName": "Kabbaj",
+    "email": "youssef.kabbaj@example.com",
+    "phone": "0600000003",
+    "position": "RH",
+    "department": "Ressources Humaines",
+    "experiences": ["Recrutement", "Formation"],
+    "formations": ["Master RH"],
+    "competences": ["Communication", "Gestion RH"]
+  },
+  {
+    "matricule": "U1004",
+    "firstName": "Sara",
+    "lastName": "Mouline",
+    "email": "sara.mouline@example.com",
+    "phone": "0600000004",
+    "position": "Chef de Projet",
+    "department": "IT",
+    "experiences": ["Gestion de projet", "Déploiement"],
+    "formations": ["MBA Gestion"],
+    "competences": ["Scrum", "Gestion de projet", "Leadership"]
+  },
+  {
+    "matricule": "U1005",
+    "firstName": "Omar",
+    "lastName": "Berrada",
+    "email": "omar.berrada@example.com",
+    "phone": "0600000005",
+    "position": "Technicien",
+    "department": "Maintenance",
+    "experiences": ["Maintenance industrielle", "Sécurité"],
+    "formations": ["BTS Maintenance"],
+    "competences": ["Électricité", "Sécurité", "Réparation"]
+  }
+] 
